@@ -1,0 +1,11 @@
+{
+    "prefecture_url": "https://pprdv.interieur.gouv.fr",
+    "retry_period_seconds": 60,
+    "to_email": "<YOUR_EMAIL_ADDRESS>",
+    "smtp": {
+        "host": "smtp.gmail.com",
+        "port": 587,
+        "user": "<YOUR_EMAIL_ADDRESS>",
+        "password": "<YOUR_SMTP_PASSWORD>"
+    }
+}

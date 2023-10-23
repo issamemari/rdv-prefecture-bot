@@ -1,10 +1,12 @@
-import argparse
+import json
 import logging
 import time
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+
+from mail import SMTPEmailer
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -39,25 +41,28 @@ def create_driver():
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--prefecture-url", type=str, default="https://pprdv.interieur.gouv.fr"
-    )
-    parser.add_argument(
-        "--period-minutes", type=int, default=1, help="Period in minutes between checks"
-    )
-    args = parser.parse_args()
+    with open("config.json") as f:
+        config = json.load(f)
+
+    emailer = SMTPEmailer(**config["smtp"])
 
     driver = create_driver()
 
     while True:
         for guichet in [0, 1, 2]:
-            if try_guichet(driver, prefecture_url=args.prefecture_url, index=guichet):
+            if try_guichet(
+                driver, prefecture_url=config["prefecture_url"], index=guichet
+            ):
                 logger.info(f"Guichet {guichet} is available")
+                emailer.send_email(
+                    subject="Guichet disponible",
+                    body=f"Guichet {guichet} is available",
+                    to_email=config["to_email"],
+                )
                 return
 
         logger.info("No guichet available")
-        time.sleep(args.period_minutes * 60)
+        time.sleep(config["retry_period_seconds"])
 
 
 if __name__ == "__main__":
