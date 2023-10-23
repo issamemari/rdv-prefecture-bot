@@ -1,5 +1,6 @@
 import argparse
 import logging
+import time
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -35,16 +36,25 @@ def main():
     parser.add_argument(
         "--prefecture-url", type=str, default="https://pprdv.interieur.gouv.fr"
     )
+    parser.add_argument(
+        "--period-minutes", type=int, default=1, help="Period in minutes between checks"
+    )
     args = parser.parse_args()
 
-    driver = webdriver.Chrome(service=Service("/usr/local/bin/chromedriver"))
+    options = webdriver.ChromeOptions()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    driver = webdriver.Chrome(service=Service("/usr/bin/chromedriver"), options=options)
 
-    for guichet in [0, 1, 2]:
-        if try_guichet(driver, prefecture_url=args.prefecture_url, index=guichet):
-            logger.info(f"Guichet {guichet} is available")
-            return
+    while True:
+        for guichet in [0, 1, 2]:
+            if try_guichet(driver, prefecture_url=args.prefecture_url, index=guichet):
+                logger.info(f"Guichet {guichet} is available")
+                return
 
-    logger.info("No guichet available")
+        logger.info("No guichet available")
+        time.sleep(args.period_minutes * 60)
 
 
 if __name__ == "__main__":

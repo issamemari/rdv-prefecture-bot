@@ -1,19 +1,25 @@
-FROM amazon/aws-lambda-python:3.8
+FROM selenium/standalone-chrome:latest
 
-ENV LAMBDA_ROOT="/var/task"
+USER root
 
+# Install python3.11
+RUN apt-get update && apt-get install -y software-properties-common
+RUN add-apt-repository ppa:deadsnakes/ppa
+RUN apt-get update && apt-get install -y python3.11 python3.11-dev python3.11-distutils
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1
+
+# Install pip
+RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+RUN python get-pip.py
+
+# Install pipenv
 RUN pip install pipenv==2022.9.24
 
 COPY . /bot
 WORKDIR /bot
 
+# Install dependencies
 RUN pipenv install --system --deploy --ignore-pipfile
 
-# Grab the zappa handler.py and put it in the working directory
-RUN ZAPPA_HANDLER_PATH=$( \
-    python -c "from zappa import handler; print (handler.__file__)" \
-    ) \
-    && echo $ZAPPA_HANDLER_PATH \
-    && cp $ZAPPA_HANDLER_PATH ${LAMBDA_ROOT}
-
-CMD [ "handler.lambda_handler" ]
+CMD ["python", "src/main.py"]
