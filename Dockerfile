@@ -22,4 +22,4 @@ WORKDIR /bot
 # Install dependencies
 RUN pipenv install --system --deploy --ignore-pipfile
 
-CMD ["python", "src/main.py"]
+ENTRYPOINT ["python", "src/main.py"]
