@@ -23,12 +23,19 @@ def try_guichet(driver: webdriver.Chrome, *, prefecture_url: str, index: int) ->
     radio_element = radio_elements[index]
     radio_element.click()
     submit.click()
-    driver.implicitly_wait(10)
 
     if "Il n'existe plus de plage horaire libre" in driver.page_source:
         return False
 
     return True
+
+
+def create_driver():
+    options = webdriver.ChromeOptions()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    return webdriver.Chrome(service=Service("/usr/bin/chromedriver"), options=options)
 
 
 def main():
@@ -41,11 +48,7 @@ def main():
     )
     args = parser.parse_args()
 
-    options = webdriver.ChromeOptions()
-    options.add_argument("--headless")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    driver = webdriver.Chrome(service=Service("/usr/bin/chromedriver"), options=options)
+    driver = create_driver()
 
     while True:
         for guichet in [0, 1, 2]:
