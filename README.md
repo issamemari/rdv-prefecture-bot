@@ -30,8 +30,8 @@ This bot is designed to check for the availability of slots on the website of a 
    - Go to your [Google Account](https://myaccount.google.com/).
    - In the left navigation panel, click on `Security`.
    - Under “Signing in to Google,” select `App Passwords`. (You might need to sign in again).
-   - Click on `Select App` dropdown and choose `Mail`, and select your device from the `Select Device` dropdown.
-   - Click on `Generate`. Note down the 16-character password. This will be your SMTP password.
+   - Create a new app specific password, and name it appropriately, such as `RDV Prefecture Bot`
+   - Note down the 16-character password. This will be your SMTP password.
    
    Do note that for this to work, you must have [2-Step Verification](https://www.google.com/landing/2step/) enabled on your Google account.
 
